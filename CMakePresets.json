@@ -20,8 +20,7 @@
       "displayName": "Debug STM32F10x build",
       "inherits": "base",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_MAKE_PROGRAM": "/usr/bin/make"
+        "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
@@ -29,8 +28,7 @@
       "displayName": "Release STM32F10x build",
       "inherits": "base",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_MAKE_PROGRAM": "/usr/bin/make"
+        "CMAKE_BUILD_TYPE": "Release"
       }
     }
   ],
