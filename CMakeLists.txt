@@ -18,12 +18,12 @@ set(STM32_CMSIS_CORE_DIR
     "${CMAKE_CURRENT_LIST_DIR}/startup/core_support")
 set(STM32_CMSIS_DEVICE_DIR
     "${CMAKE_CURRENT_LIST_DIR}/startup/device_support")
-set(STM32_DRIVER_DIR
+set(STM32_STDPERIPH_DIR
     "${CMAKE_CURRENT_LIST_DIR}/library")
 set(STM32_STARTUP_FILE
     "${CMAKE_CURRENT_LIST_DIR}/startup/startup_stm32f10x_md.s")
 
-foreach(path IN ITEMS "${STM32_CMSIS_CORE_DIR}" "${STM32_CMSIS_DEVICE_DIR}" "${STM32_DRIVER_DIR}" "${STM32_STARTUP_FILE}")
+foreach(path IN ITEMS "${STM32_CMSIS_CORE_DIR}" "${STM32_CMSIS_DEVICE_DIR}" "${STM32_STDPERIPH_DIR}" "${STM32_STARTUP_FILE}")
     if(NOT EXISTS "${path}")
         message(FATAL_ERROR "Required STM32 system path not found: ${path}")
     endif()
@@ -39,7 +39,9 @@ find_program(CMAKE_SIZE arm-none-eabi-size REQUIRED)
 find_program(STM32_PROGRAMMER_CLI STM32_Programmer_CLI)
 
 file(GLOB STM32_DRIVER_SOURCES CONFIGURE_DEPENDS
-    "${STM32_DRIVER_DIR}/src/*.c")
+    "${STM32_STDPERIPH_DIR}/src/*.c")
+file(GLOB APP_DRIVER_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_LIST_DIR}/driver/*.c")
 
 set(STM32_COMMON_COMPILE_OPTIONS
     -mcpu=cortex-m3
@@ -67,7 +69,7 @@ target_include_directories(stm32_common_options INTERFACE
     "${CMAKE_CURRENT_LIST_DIR}/library"
     "${STM32_CMSIS_CORE_DIR}"
     "${STM32_CMSIS_DEVICE_DIR}"
-    "${STM32_DRIVER_DIR}/inc")
+    "${STM32_STDPERIPH_DIR}/inc")
 
 add_library(stm32_stdperiph STATIC
     ${STM32_DRIVER_SOURCES}
@@ -77,7 +79,10 @@ target_link_libraries(stm32_stdperiph PUBLIC stm32_common_options)
 add_executable(${PROJECT_NAME}
     app/main.c
     app/stm32f10x_it.c
+    ${APP_DRIVER_SOURCES}
     "${STM32_STARTUP_FILE}")
+target_include_directories(${PROJECT_NAME} PRIVATE
+    "${CMAKE_CURRENT_LIST_DIR}/driver")
 target_link_libraries(${PROJECT_NAME} PRIVATE stm32_stdperiph stm32_common_options)
 target_link_options(${PROJECT_NAME} PRIVATE
     -mcpu=cortex-m3
