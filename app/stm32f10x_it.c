@@ -1,5 +1,6 @@
 #include "stm32f10x.h"
 #include "stm32f10x_it.h"
+#include "usart1_dma.h"
 
 void NMI_Handler(void)
 {
@@ -43,4 +44,9 @@ void PendSV_Handler(void)
 
 void SysTick_Handler(void)
 {
+}
+
+void DMA1_Channel4_IRQHandler(void)
+{
+    usart1_dma_irq_handler();
 }
